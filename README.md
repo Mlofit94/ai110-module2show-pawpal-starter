@@ -83,14 +83,12 @@ Sample test output:
 
 ## 📐 Smarter Scheduling
 
-> Fill in once you've implemented scheduling logic.
-
 | Feature | Method(s) | Notes |
 |---------|-----------|-------|
-| Task sorting | | e.g., by priority, duration |
-| Filtering | | e.g., skip tasks if time runs out |
-| Conflict handling | | e.g., overlapping time slots |
-| Recurring tasks | | e.g., daily vs. weekly |
+| Task sorting | `Scheduler.sort_by_time()` | Sorts the generated schedule by each task's `scheduled_time`; tasks with no time set are pushed to the end instead of crashing the sort. |
+| Filtering | `Scheduler.filter_tasks()` | Filters tasks across all of an owner's pets by completion status, pet name, or both (omit either to skip that filter). |
+| Conflict handling | `Scheduler.detect_conflicts()` | Groups scheduled tasks by `scheduled_time` and flags any time slot shared by 2+ tasks (same pet or different pets) as a warning string — exact-time matches only, not overlapping durations. Warnings are appended automatically in `explain_plan()`. |
+| Recurring tasks | `Task.next_occurrence()`, `Pet.mark_task_complete()` | Completing a `"daily"` or `"weekly"` task via `Pet.mark_task_complete()` creates and adds the next occurrence automatically, with its `due_date` advanced by `timedelta` (so month/year boundaries roll over correctly). `"once"` tasks don't recur. |
 
 ## 📸 Demo Walkthrough
 

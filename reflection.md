@@ -47,6 +47,8 @@ Scheduler — holds a date and a pet; responsible for building and explaining th
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
 
+`detect_conflicts()` only flags tasks scheduled at the *exact same* time, not tasks whose durations overlap (e.g. a 20-minute task at 9:00 and another starting at 9:10 wouldn't be caught, even though they overlap). I chose this because it's simple and fast to check — just group tasks by their time and flag any group with more than one — whereas true overlap detection means comparing start/end ranges between every pair of tasks, which is more code and slower to run. For a single pet owner's daily task list (a handful of tasks), exact-match conflicts are the obvious case to catch first, and the missed overlap cases are a known limitation rather than a bug.
+
 ---
 
 ## 3. AI Collaboration
