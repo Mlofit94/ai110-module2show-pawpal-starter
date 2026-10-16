@@ -22,6 +22,17 @@ Your final app should:
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
 
+## Implementation Summary
+
+PawPal+ is built around four classes in `pawpal_system.py`:
+
+- **Owner** holds a name, preferences, and a list of `Pet`s. It can add pets and, importantly, collect every pet's tasks together via `get_all_tasks()`.
+- **Pet** holds basic info (name, species) and its own list of `Task`s.
+- **Task** represents a single care activity — title, duration, priority, frequency, and completion status — and validates that its priority is one of `low`/`medium`/`high`.
+- **Scheduler** is the "brain." It never looks at a single pet directly — it goes through `Owner.get_all_tasks()` so it can build a plan across *all* of an owner's pets at once. It sorts pending tasks by priority and duration, fills the day up to an optional time budget, and can explain the resulting plan in plain text.
+
+`main.py` ties it together as a quick CLI demo: it creates an owner with two pets, adds a few tasks, generates a schedule, and prints it — see the Sample Output section above.
+
 ## Getting started
 
 ### Setup
@@ -47,11 +58,11 @@ pip install -r requirements.txt
 Paste a sample of your app's CLI or Streamlit output here so a reader can see what a generated plan looks like:
 
 ```
-# e.g.:
-# Daily plan for Biscuit (Golden Retriever):
-#   08:00 — Morning walk (30 min) [priority: high]
-#   09:00 — Feeding (10 min) [priority: high]
-#   ...
+Today's Schedule
+Schedule for 2026-10-15:
+- [Mochi] Morning walk (20 min, high priority)
+- [Luna] Clean litter box (15 min, medium priority)
+- [Mochi] Brush fur (10 min, low priority)
 ```
 
 ## 🧪 Testing PawPal+

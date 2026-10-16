@@ -6,6 +6,15 @@
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+
+Owner — holds a name, preferences, and their list of pets; responsible for managing which pets it owns.
+
+Pet — holds name, species, owner reference, and its list of tasks; responsible for tracking its own care tasks.
+
+Task — holds title, duration, priority, completion status, scheduled time; responsible for its own completion state and priority check.
+
+Scheduler — holds a date and a pet; responsible for building and explaining the daily task schedule (doesn't store tasks itself — receives them when generating a schedule).
+------------------------------------------------------------------
 1. Add a pet profile — everything else (walks, tasks, reminders) depends on having a pet to attach it to.
 
 2. Schedule a walk — it's the app's core recurring use case, the reason someone opens PawPal day to day.
@@ -16,6 +25,13 @@
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
+
+1. The Scheduler now has a place to store the schedule it builds, so it can later explain why it picked those tasks.
+2. Instead of being handed a random list of tasks, the Scheduler now just looks at the pet's own task list — no more risk of using the wrong set of tasks.
+3. The Scheduler is now connected to the Owner, so it can actually see things like how much time the owner has available when building a plan.
+4. A task's scheduled time is now clearly marked as "optional," since a task might not have a time assigned yet.
+5. Fixed a printing/comparison issue caused by the Pet and Owner referring back to each other — that loop no longer confuses Python.
+6. Added a safety check so a task's priority can only be "low," "medium," or "high" — typos like "hgih" will now throw an error instead of silently breaking later.
 
 ---
 
@@ -37,13 +53,11 @@
 
 **a. How you used AI**
 
-- How did you use AI tools during this project (for example: design brainstorming, debugging, refactoring)?
-- What kinds of prompts or questions were most helpful?
+I used AI to help brainstorm my classes, turn my UML into Python code, and review my code for problems. The AI suggested things like adding a `scheduled_tasks` list to the Scheduler so it could remember its plan, and a `get_all_tasks()` method on Owner so the Scheduler could pull tasks from all pets instead of just one. Asking it to review my code and explain issues in plain language was the most helpful.
 
 **b. Judgment and verification**
 
-- Describe one moment where you did not accept an AI suggestion as-is.
-- How did you evaluate or verify what the AI suggested?
+The AI first gave the Scheduler its own separate `tasks` list, but I didn't accept that — it would have duplicated the tasks already stored on each Pet. I had it remove that field so tasks only live in one place. I verified everything worked by running `main.py` and checking that the printed schedule looked correct, and by running the pytest tests to confirm task completion and task addition both worked as expected.
 
 ---
 
