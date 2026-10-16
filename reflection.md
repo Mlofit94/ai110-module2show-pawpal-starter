@@ -6,6 +6,11 @@
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+1. Add a pet profile — everything else (walks, tasks, reminders) depends on having a pet to attach it to.
+
+2. Schedule a walk — it's the app's core recurring use case, the reason someone opens PawPal day to day.
+
+3. See today's tasks — gives an at-a-glance view so users can quickly check what's done/pending without digging through screens.
 
 **b. Design changes**
 
