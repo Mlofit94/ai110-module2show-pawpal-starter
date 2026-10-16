@@ -61,19 +61,24 @@ I used AI to help brainstorm my classes, turn my UML into Python code, and revie
 
 The AI first gave the Scheduler its own separate `tasks` list, but I didn't accept that — it would have duplicated the tasks already stored on each Pet. I had it remove that field so tasks only live in one place. I verified everything worked by running `main.py` and checking that the printed schedule looked correct, and by running the pytest tests to confirm task completion and task addition both worked as expected.
 
+**c. AI Strategy**
+
+- *Most effective features:* Plain-language code review (catching bugs and explaining *why* they're bugs), writing test cases for edge cases I wouldn't have thought of, and actually running the app/tests to check things worked instead of just assuming the code was right.
+- *A suggestion I rejected:* The AI gave the Scheduler its own copy of the task list. I said no — tasks should only live in one place (on the Pet), so I had it removed. Small change, but it kept the design from having two "sources of truth" for the same data.
+- *Separate chat sessions:* Working through one feature at a time (design, then sorting, then recurring tasks, then conflicts, then tests, then UI) kept each conversation focused. It meant feedback stayed on-topic instead of mixing half-finished ideas from different parts of the project together.
+- *Being the "lead architect":* The AI is good at generating options and catching mistakes, but it doesn't know what I actually want my app to look like — that's still my call. My job was to approve, reject, or simplify what it suggested, and to double-check its work rather than trust it blindly.
+
 ---
 
 ## 4. Testing and Verification
 
 **a. What you tested**
 
-- What behaviors did you test?
-- Why were these tests important?
+I wrote pytest tests for every main feature: building a schedule (priority + time budget), sorting by time, filtering by status/pet, conflict detection, and recurring tasks. I tested both the normal case (everything works as expected) and edge cases, like an empty task list, two tasks at the exact same time, a task with no time set, and a recurring task's due date rolling over a month or year boundary. These mattered because the "normal" case is easy to get right by accident, it's the edge cases (nothing scheduled, times colliding, dates rolling over) where real bugs hide.
 
 **b. Confidence**
 
-- How confident are you that your scheduler works correctly?
-- What edge cases would you test next if you had more time?
+I'm fairly confident the core logic is correct, all 24 tests pass, covering both happy paths and the edge cases above. The one thing I'm not confident about: completing an already-completed recurring task currently creates a duplicate "next day" task instead of being blocked. I wrote a test that documents this as a known gap rather than pretending it's fixed. If I had more time, I'd also test true overlapping-time conflicts (not just exact-same-time matches) and add tests for multiple pets interacting on the same schedule.
 
 ---
 
@@ -81,12 +86,12 @@ The AI first gave the Scheduler its own separate `tasks` list, but I didn't acce
 
 **a. What went well**
 
-- What part of this project are you most satisfied with?
+I'm most satisfied with how the four features — sorting, filtering, conflict detection, and recurring tasks — all work together through the same `Scheduler` class without stepping on each other. Each one is simple on its own, but combined they make the schedule feel genuinely useful instead of just a sorted list.
 
 **b. What you would improve**
 
-- If you had another iteration, what would you improve or redesign?
+I'd fix the duplicate-task bug from completing an already-completed recurring task, and upgrade conflict detection to catch overlapping durations, not just exact time matches. I'd also extend the UI to support more than one pet at a time, since right now it only tracks a single pet per session.
 
 **c. Key takeaway**
 
-- What is one important thing you learned about designing systems or working with AI on this project?
+The AI was great at generating code, catching bugs, and writing tests fast — but it doesn't know what I actually want the app to be. The real work was deciding what to accept, what to simplify, and what to verify myself by actually running the app and tests, instead of assuming the code was correct just because it looked reasonable.

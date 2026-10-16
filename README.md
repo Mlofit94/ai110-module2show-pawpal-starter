@@ -15,12 +15,19 @@ Your job is to design the system first (UML), then implement the logic in Python
 ## What you will build
 
 Your final app should:
-
 - Let a user enter basic owner + pet info
 - Let a user add/edit tasks (duration + priority at minimum)
 - Generate a daily schedule/plan based on constraints and priorities
 - Display the plan clearly (and ideally explain the reasoning)
 - Include tests for the most important scheduling behaviors
+
+## ✨ Features
+
+- **Priority-based scheduling** — builds a day's plan across every pet an owner has, picking tasks by priority first and fitting as many as possible within an optional time budget, without blocking smaller lower-priority tasks behind one that didn't fit.
+- **Sorting by time** — orders the generated schedule chronologically by each task's time of day, with any task that has no time set pushed to the end instead of breaking the sort.
+- **Filtering by status or pet** — narrows the task list down to just completed/pending tasks, a single pet, or both at once.
+- **Conflict warnings** — flags any two tasks scheduled for the exact same time (whether for the same pet or different pets) with a clear, human-readable warning naming which tasks collide and when, so an owner can resolve it before the day starts.
+- **Daily/weekly recurrence** — completing a recurring task automatically creates its next occurrence with the correct due date (handling month- and year-end rollovers correctly), while one-off tasks simply stay completed.
 
 ## Implementation Summary
 
@@ -123,12 +130,57 @@ tests/test_pawpal.py::test_calling_mark_task_complete_twice_spawns_duplicate_nex
 
 ## 📸 Demo Walkthrough
 
-Describe your app in numbered steps so a reader can follow along without watching a video:
+### UI features
 
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
+The Streamlit app (`app.py`) lets a user:
 
-**Screenshot or video** *(optional)*: <!-- Insert a screenshot or link to a demo video here -->
+- Enter an owner name, pet name, and species, which update the underlying `Owner`/`Pet` live as you type.
+- Add a task with a title, duration, priority, repeat frequency (`once`/`daily`/`weekly`), and an optional time of day.
+- View all of a pet's tasks in a table (time, owner, pet, task, duration, priority, frequency, status).
+- Mark a task complete from a dropdown that labels each option with enough detail (pet, time, duration, priority) to tell tasks apart, even when titles repeat.
+- Filter the task list by status (All/Pending/Completed).
+- Generate today's schedule, which sorts it by time and checks it for conflicts before displaying it.
+
+### Example workflow
+
+1. Add a pet — type an owner and pet name at the top; a `Pet` is created and tracked for the rest of the session.
+2. Add a task — e.g. "Morning walk," 20 minutes, high priority, at 09:00. It appears immediately in the "Current tasks" table.
+3. Add a second task at the same time (e.g. "Feed breakfast" also at 09:00) to see conflict detection in action.
+4. Click **Generate schedule** — the app sorts both tasks by time and shows a warning that they collide at 09:00, followed by the full sorted schedule.
+5. Mark a task complete — if it's a `"daily"` or `"weekly"` task, a new occurrence is created automatically for the next due date, visible in the task count and table.
+
+### Key Scheduler behaviors shown
+
+- **Sorting** — `sort_by_time()` always presents the day in chronological order, regardless of the order tasks were entered.
+- **Conflict warnings** — `detect_conflicts()` catches same-time collisions across pets (not just within one pet) and reports them in plain language before the schedule table.
+- **Filtering** — `filter_tasks()` narrows what's shown without losing any underlying data; switching the status filter never deletes a task.
+- **Recurrence** — `Pet.mark_task_complete()` keeps recurring tasks alive by generating the next occurrence the moment the current one is completed, rather than requiring the user to re-enter it.
+
+### Sample CLI output
+
+Running `python main.py` exercises the same Scheduler logic outside the UI:
+
+```
+Today's Schedule (sorted by time)
+Schedule for 2026-10-16:
+- [Luna] Feed breakfast (5 min, high priority)
+- [Luna] Clean litter box (15 min, medium priority)
+- [Mochi] Evening walk (20 min, high priority)
+- [Luna] Evening playtime (15 min, medium priority)
+
+WARNING: Conflict at 18:00: [Mochi] Evening walk, [Luna] Evening playtime are all scheduled at the same time.
+
+Remaining (incomplete) tasks:
+- [Mochi] Evening walk
+- [Luna] Clean litter box
+- [Luna] Feed breakfast
+- [Luna] Evening playtime
+
+Mochi's tasks only:
+- Evening walk (pending)
+- Brush fur (done)
+
+Completed 'Clean litter box' (due 2026-10-16).
+Next occurrence auto-created: due 2026-10-17, completed=False
+Luna now has 4 tasks on file.
+```
